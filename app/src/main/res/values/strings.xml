@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Demo</string>
+
+    <!--login-->
+    <string name="login">登录</string>
+    <string name="login_et_phone">请输入您的手机号</string>
+    <string name="login_et_password">请输入6-16位密码</string>
+    <string name="login_et_phone_pass">请输入短信验证码</string>
+    <string name="login_btn_send_code">获取验证码</string>
+    <string name="login_no_get_verification_code">验证码没收到?</string>
+    <string name="login_not_has_account">没有蚕食账号？ 去</string>
+    <string name="login_look_back_password">忘记密码？</string>
+    <string name="login_by_third">第三方账号登录</string>
+
+    <!--register-->login_et_password
+    <string name="register">注册</string>
+</resources>
