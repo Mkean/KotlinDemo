@@ -4,6 +4,19 @@ import java.util.regex.Pattern
 
 class ValidationUtils {
 
+    companion object {
+        private var instance: ValidationUtils? = null
+
+        @Synchronized
+        fun get(): ValidationUtils {
+            if (instance == null) {
+                instance = ValidationUtils()
+            }
+            return instance!!
+        }
+    }
+
+
     /**
      * 验证用户名是否合法
      *

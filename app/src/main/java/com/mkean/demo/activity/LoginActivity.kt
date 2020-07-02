@@ -23,17 +23,32 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         const val fastLogin: Int = 102
     }
 
-    private var httpMethod: HttpMethod? = null
+    private val httpMethod = HttpMethod.getInstance(this)
 
-    private var count: CountTimer? = null
-    private var phoneCount: CountTimer? = null
+    private val count = CountTimer(30 * 1000, 1000, btn_login_send_code, tv_phone_verification_code, false)
+    private val phoneCount = CountTimer(60 * 1000, 1000, btn_login_send_code, tv_phone_verification_code, true)
 
-    private var graphicVerificationUtil: GraphicVerificationUtil? = null
-    private var snappyDBUtil: SnappyDBUtil? = null
-    private var userInfo: UserInfo? = null
+    private val graphicVerificationUtil = GraphicVerificationUtil(this)
+    private val snappyDBUtil = SnappyDBUtil(this)
+    private val userInfo = UserInfo.getInstance(this)
 
     private var h5Login: Boolean = false
     private var isShowPwd: Boolean = false
+
+    init {
+
+        pwd_is_show.setOnClickListener(this)
+        tv_login_stands_login.setOnClickListener(this)
+        tv_login_fast_login.setOnClickListener(this)
+        tv_login_look_back_password.setOnClickListener(this)
+        tv_phone_verification_code.setOnClickListener(this)
+        btn_login_login.setOnClickListener(this)
+        btn_login_send_code.setOnClickListener(this)
+        ll_login_wechat_login.setOnClickListener(this)
+        ll_login_qq_login.setOnClickListener(this)
+        ll_login_register.setOnClickListener(this)
+        ll_back.setOnClickListener(this)
+    }
 
 
     override fun registerEventBus(): Boolean = true
@@ -53,32 +68,12 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
     override fun onViewCreate() {
         super.onViewCreate()
-        snappyDBUtil = SnappyDBUtil(this)
-        userInfo = UserInfo.getInstance(this)
-        httpMethod = HttpMethod.getInstance(this)
-        graphicVerificationUtil = GraphicVerificationUtil(this)
-        count = CountTimer(30 * 1000, 1000, btn_login_send_code, tv_phone_verification_code, false)
-        phoneCount = CountTimer(60 * 1000, 1000, btn_login_send_code, tv_phone_verification_code, true)
 
         tv_wait_assess_title_name.text = resources.getString(R.string.login)
         btn_login_login.isEnabled = false
 
         chooseModel(fastLogin)
         checkLogin()
-
-        pwd_is_show.setOnClickListener(this)
-        tv_login_stands_login.setOnClickListener(this)
-        tv_login_fast_login.setOnClickListener(this)
-        tv_login_look_back_password.setOnClickListener(this)
-        tv_phone_verification_code.setOnClickListener(this)
-        btn_login_login.setOnClickListener(this)
-        btn_login_send_code.setOnClickListener(this)
-        ll_login_wechat_login.setOnClickListener(this)
-        ll_login_qq_login.setOnClickListener(this)
-        ll_login_register.setOnClickListener(this)
-        ll_back.setOnClickListener(this)
-
-
     }
 
     var loginType: Int = standsLogin
