@@ -1,8 +1,12 @@
 package com.mkean.demo.test
 
+var bar: Int = 5
+    private set
+
+
 fun main() {
 
-    val test = KotlinTest(7.0,8.0)
+    val test = KotlinTest(7.0, 8.0)
 
     println("max of 0 and 42 is ${maxOf(0, 42)}")
 
@@ -33,6 +37,23 @@ fun main() {
     for (i in 4 downTo 1) {
         println(i)
     }
+
+    println("--------------------------\n")
+
+    val list = mutableListOf(1, 2, 3).also {
+        it.swap(0,1)
+        for (item in it){
+            print("${item}----")
+        }
+    }
+}
+
+
+private fun  MutableList<Int>.swap(e: Int, e1: Int) {
+    val tmp = this[e]
+    this[e] = this[e1]
+    this[e1] = tmp
+
 }
 
 class KotlinTest(var height: Double,
@@ -49,7 +70,7 @@ class KotlinTest(var height: Double,
 
     fun maxOf(a: Int, b: Int) = if (a > b) a else b
 
-    fun parseInt(str: String): Int? {
+    private fun parseInt(str: String): Int? {
         return str.toIntOrNull()
     }
 

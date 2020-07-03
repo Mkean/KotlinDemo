@@ -26,6 +26,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.mkean.demo.R;
 import com.mkean.demo.app.BaseApplication;
 import com.mkean.demo.entity.MenuBean;
+import com.mkean.demo.http.HttpMethod;
 import com.mkean.demo.http.manager.RetrofitManager;
 import com.mkean.demo.httpService.HomeService;
 import com.mkean.demo.utils.ScreenUtils;
@@ -74,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
             recyclerView.setAdapter(adapter);
         }
+
+
     }
 
     @SuppressLint("CheckResult")
@@ -99,6 +102,11 @@ public class MainActivity extends AppCompatActivity {
                 }, throwable -> {
                     Log.e("TAG", "initData: " + throwable.getMessage());
                 });
+
+        HttpMethod instance = HttpMethod.getInstance(context);
+        if (instance != null) {
+            Log.e("TAG", "instance != null");
+        }
     }
 
     public static class BaseAdapter extends RecyclerView.Adapter<BaseAdapter.BaseViewHolder> {

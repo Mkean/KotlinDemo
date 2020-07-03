@@ -1,6 +1,7 @@
 package com.mkean.demo.http;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import com.bidanet.android.common.utils.http.Cookies.CookiesManager;
@@ -19,8 +20,8 @@ import retrofit2.converter.fastjson.FastJsonConverterFactory;
  * Created by Administrator on 2016/ic_yello_ball/23.
  */
 public class HttpMethod {
-//        public static final String BASEHTTP = "http://life.yfcanshi.com/api/v2/";
-        public static final String BASEHTTP = BaseApplication.baseurlGCX;
+    //        public static final String BASEHTTP = "http://life.yfcanshi.com/api/v2/";
+    public static final String BASEHTTP = BaseApplication.baseurlGCX;
 //        public static final String BASEHTTP = "http://118.178.95.214:10999/api/v2/";
 //        public static final String BASEHTTP = "http://gucxsql.free.ngrok.cc/api/v2/";
 //        public static final String BASEHTTP = "http://192.168.0.125:8080/api/v2/";
@@ -52,6 +53,7 @@ public class HttpMethod {
     private HttpMethod(Context context) {
         this.context = context;
         String versionCode = "";
+
         try {
             versionCode = String.valueOf(context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode);
         } catch (PackageManager.NameNotFoundException e) {
@@ -59,7 +61,7 @@ public class HttpMethod {
         }
 
 
-        CommonInterceptor commonInterceptor = new CommonInterceptor("from_client", "com.yingegou.android", Constants.REQUEST_VERSION,versionCode);
+        CommonInterceptor commonInterceptor = new CommonInterceptor("from_client", "com.yingegou.android", Constants.REQUEST_VERSION, versionCode);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(new CookiesManager(context))
@@ -96,7 +98,8 @@ public class HttpMethod {
         T t = com.bidanet.android.common.utils.http.HttpMethod.getHttp().create(T);
         return t;
     }
-    public <T> T getServicesNoToken(Class<T> T){
+
+    public <T> T getServicesNoToken(Class<T> T) {
         T t = retrofit.create(T);
         return t;
     }

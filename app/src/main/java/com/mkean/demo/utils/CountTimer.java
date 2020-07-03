@@ -11,7 +11,7 @@ public class CountTimer extends CountDownTimer {
     private TextView button;
     private TextView textView;
 
-    private int countTime;
+    public  int countTime;
     private boolean voice;
 
     /**
@@ -36,6 +36,10 @@ public class CountTimer extends CountDownTimer {
     public void startCount() {
         button.setEnabled(false);
         start();
+    }
+
+    public void stopCount(){
+        cancel();
     }
 
     @Override

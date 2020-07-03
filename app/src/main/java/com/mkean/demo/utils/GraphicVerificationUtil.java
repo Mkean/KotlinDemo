@@ -59,7 +59,7 @@ public class GraphicVerificationUtil implements View.OnClickListener {
         this.phone = phone;
         this.uuid = uuid;
         initView();
-
+        // TODO：未完成 dialog
         // 初始图片
         Glide.with(activity).load(IMAGE_VIEW_URL + uuid).into(ivIcon);
     }
@@ -69,7 +69,7 @@ public class GraphicVerificationUtil implements View.OnClickListener {
         this.uuid = uuid;
         this.count = count;
         initView();
-
+        // TODO：未完成 dialog
         // 初始图片
         Glide.with(activity).load(IMAGE_VIEW_URL + uuid).into(ivIcon);
     }

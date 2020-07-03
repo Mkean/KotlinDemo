@@ -2,7 +2,7 @@ package com.mkean.demo.utils
 
 import java.util.regex.Pattern
 
-class ValidationUtils {
+class ValidationUtils private constructor(){
 
     companion object {
         private var instance: ValidationUtils? = null
