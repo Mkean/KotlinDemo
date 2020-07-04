@@ -3,6 +3,7 @@ package com.mkean.demo.activity
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -33,14 +34,13 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         const val fastLogin: Int = 102
     }
 
-    private val httpMethod = HttpMethod.getInstance(this@LoginActivity)
+    private lateinit var httpMethod: HttpMethod
 
-    private val count = CountTimer(30 * 1000, 1000, btn_login_send_code, tv_phone_verification_code, false)
-    private val phoneCount = CountTimer(60 * 1000, 1000, btn_login_send_code, tv_phone_verification_code, true)
-
-    private val graphicVerificationUtil = GraphicVerificationUtil(this@LoginActivity)
-    private val snappyDBUtil = SnappyDBUtil(this@LoginActivity)
-    private val userInfo = UserInfo.getInstance(this@LoginActivity)
+    private lateinit var count:CountTimer
+    private lateinit var phoneCount:CountTimer
+    private lateinit var graphicVerificationUtil:GraphicVerificationUtil
+    private lateinit var snappyDBUtil:SnappyDBUtil
+    private lateinit var userInfo : UserInfo
 
     private var h5Login: Boolean = false
     private var isShowPwd: Boolean = false
@@ -60,6 +60,17 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        httpMethod = HttpMethod.getInstance(context)
+        count=CountTimer(30 * 1000, 1000, btn_login_send_code, tv_phone_verification_code, false)
+        phoneCount = CountTimer(60 * 1000, 1000, btn_login_send_code, tv_phone_verification_code, true)
+
+        graphicVerificationUtil = GraphicVerificationUtil(context as Activity?)
+        snappyDBUtil = SnappyDBUtil(context)
+        userInfo = UserInfo.getInstance(context)
+
+    }
 
     override fun onViewCreate() {
         super.onViewCreate()
@@ -84,7 +95,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
     }
 
-    var loginType: Int = standsLogin
+    private var loginType: Int = standsLogin
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.ll_back -> {
@@ -244,6 +255,8 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             tv_phone_error.visibility = View.VISIBLE
             return
         }
+
+        // TODO：有错误
         httpMethod.getServicesNoToken(LoginServices::class.java)
                 .getSmsCodeAndExist(et_login_phone.text.toString().trim())
                 .subscribeOn(Schedulers.io())
