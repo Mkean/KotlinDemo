@@ -1,11 +1,12 @@
 package com.mkean.demo.entity
 
-data class LoginResult(
-        val token: TokenData,
+data class LoginResult (
         val statusCode: Int,
-        val message: String
+        val message: String,
+        val data: TokenData
+
 )
 
-data class TokenData(
+data class TokenData (
         val token: String
 )

@@ -61,16 +61,18 @@ public class BaseApplication extends Application {
 
     private static Handler mHandler = new Handler(Looper.getMainLooper());
 
+    public static final String VERSION_CODE = "1.0";
+
     @Override
     public void onCreate() {
         super.onCreate();
         app = this;
 
         AutoSize.checkAndInit(this);
+        initNetwork();
 
         initSmartRefresh();
         initARouter();
-        initNetwork();
         initX5(this);
         registerActivityLifecycleCallbacks(new MonitorActivityStatusCallback());
     }

@@ -11,6 +11,8 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.mkean.demo.R
+import com.mkean.demo.app.BaseApplication
+import com.mkean.demo.app.Constants
 import com.mkean.demo.entity.UserInfo
 import com.mkean.demo.http.HttpMethod
 import com.mkean.demo.httpService.LoginServices
@@ -36,11 +38,11 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
     private lateinit var httpMethod: HttpMethod
 
-    private lateinit var count:CountTimer
-    private lateinit var phoneCount:CountTimer
-    private lateinit var graphicVerificationUtil:GraphicVerificationUtil
-    private lateinit var snappyDBUtil:SnappyDBUtil
-    private lateinit var userInfo : UserInfo
+    private lateinit var count: CountTimer
+    private lateinit var phoneCount: CountTimer
+    private lateinit var graphicVerificationUtil: GraphicVerificationUtil
+    private lateinit var snappyDBUtil: SnappyDBUtil
+    private lateinit var userInfo: UserInfo
 
     private var h5Login: Boolean = false
     private var isShowPwd: Boolean = false
@@ -62,11 +64,23 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        snappyDBUtil = SnappyDBUtil(this)
+        com.bidanet.android.common.utils.http.HttpMethod.headers["x-platform"] = "android"
+
+        var adCode = snappyDBUtil.getDbInteger(Constants.CITY_AD_CODE)
+        if (adCode == 0) {
+            adCode = 320506
+            snappyDBUtil.putInteger(Constants.CITY_AD_CODE, adCode)
+        }
+        com.bidanet.android.common.utils.http.HttpMethod.headers["x-city"] = adCode.toString()
+        com.bidanet.android.common.utils.http.HttpMethod.headers["x-version"] = BaseApplication.VERSION_CODE
+
         httpMethod = HttpMethod.getInstance(context)
-        count=CountTimer(30 * 1000, 1000, btn_login_send_code, tv_phone_verification_code, false)
+        count = CountTimer(30 * 1000, 1000, btn_login_send_code, tv_phone_verification_code, false)
         phoneCount = CountTimer(60 * 1000, 1000, btn_login_send_code, tv_phone_verification_code, true)
 
-        graphicVerificationUtil = GraphicVerificationUtil(context as Activity?)
+        graphicVerificationUtil = GraphicVerificationUtil(context as Activity)
         snappyDBUtil = SnappyDBUtil(context)
         userInfo = UserInfo.getInstance(context)
 
@@ -120,6 +134,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             }
             R.id.tv_login_fast_login -> {
                 chooseModel(fastLogin)
+                tv_password_error.text = ""
             }
             R.id.tv_login_stands_login -> {
                 chooseModel(standsLogin)
@@ -152,18 +167,18 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
         when (loginType) {
             standsLogin -> {
-                httpMethod.getServicesNoToken(LoginServices::class.java)
+                httpMethod.getServices(LoginServices::class.java)
                         .loginWithoutCode(et_login_phone.text.toString().trim(), et_login_password.text.toString().trim(), "api", "ORIGIN_APP_ANDROID")
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             when (it.statusCode) {
                                 200 -> {
-                                    UserInfoUtil.getUserInfo(this@LoginActivity)
+                                    UserInfoUtil.getUserInfo(context)
                                     userInfo.isLogin = true
-                                    com.bidanet.android.common.utils.http.HttpMethod.urlParams["token"] = it.token.token
-                                    com.bidanet.android.common.utils.http.HttpMethod.formParams["token"] = it.token.token
-                                    snappyDBUtil.putString("token", it.token.token)
+                                    com.bidanet.android.common.utils.http.HttpMethod.urlParams["token"] = it.data.token
+                                    com.bidanet.android.common.utils.http.HttpMethod.formParams["token"] = it.data.token
+                                    snappyDBUtil.putString("token", it.data.token)
                                     Toast.makeText(context, "登录成功", Toast.LENGTH_SHORT).show()
                                     EventBus.getDefault().post("loginSuccess")
                                 }
@@ -204,11 +219,11 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                         .subscribe({
                             when (it.statusCode) {
                                 200 -> {
-                                    com.bidanet.android.common.utils.http.HttpMethod.urlParams["token"] = it.token.token
-                                    com.bidanet.android.common.utils.http.HttpMethod.formParams["token"] = it.token.token
+                                    com.bidanet.android.common.utils.http.HttpMethod.urlParams["token"] = it.data.token
+                                    com.bidanet.android.common.utils.http.HttpMethod.formParams["token"] = it.data.token
                                     userInfo.isLogin = true
-                                    UserInfoUtil.getUserInfo(this@LoginActivity)
-                                    snappyDBUtil.putString("token", it.token.token)
+                                    UserInfoUtil.getUserInfo(context)
+                                    snappyDBUtil.putString("token", it.data.token)
                                     Toast.makeText(context, "登录成功", Toast.LENGTH_SHORT).show()
                                     EventBus.getDefault().post("loginSuccess")
                                     if (!h5Login) {
@@ -332,6 +347,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                 iv_phone.setImageResource(R.mipmap.login_account)
                 iv_password.setImageResource(R.mipmap.login_password)
 
+                et_login_password.setText("")
                 et_login_phone.hint = resources.getString(R.string.login_et_phone)
                 et_login_password.hint = resources.getString(R.string.login_et_password)
                 et_login_password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
@@ -359,6 +375,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                 view_divider.visibility = View.VISIBLE
                 view_login_fast_login.visibility = View.VISIBLE
 
+                et_login_password.setText("")
                 et_login_phone.hint = resources.getString(R.string.login_et_phone)
                 et_login_password.hint = resources.getString(R.string.login_et_phone_pass)
                 et_login_password.inputType = InputType.TYPE_CLASS_NUMBER

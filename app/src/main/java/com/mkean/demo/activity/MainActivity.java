@@ -38,7 +38,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -84,21 +83,19 @@ public class MainActivity extends AppCompatActivity {
         Observable<MenuBean> menuList = RetrofitManager.getInstance(BaseApplication.baseurlFYJ).create(HomeService.class).getMenuList();
         menuList.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<MenuBean>() {
-                    @Override
-                    public void accept(MenuBean menuBean) throws Exception {
-                        if (menuBean == null) {
-                            Log.e("TAG", "menuBean==null");
-                            return;
-                        }
-                        if (menuBean.getStatus() == 200) {
-                            List<MenuBean.DataBean> data = menuBean.getData();
-                            Log.e("TAG", "menuBean：：：" + data.size());
-                            dataList.addAll(data);
-                            adapter.setList(dataList);
-                            adapter.notifyItemChanged(0);
-                        }
+                .subscribe(menuBean -> {
+                    if (menuBean == null) {
+                        Log.e("TAG", "menuBean==null");
+                        return;
                     }
+                    if (menuBean.getStatus() == 200) {
+                        List<MenuBean.DataBean> data = menuBean.getData();
+                        Log.e("TAG", "menuBean：：：" + data.size());
+                        dataList.addAll(data);
+                        adapter.setList(dataList);
+                        adapter.notifyItemChanged(0);
+                    }
+
                 }, throwable -> {
                     Log.e("TAG", "initData: " + throwable.getMessage());
                 });

@@ -1,10 +1,11 @@
 package com.mkean.demo.http;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.util.Log;
 
 import com.bidanet.android.common.utils.http.Cookies.CookiesManager;
+import com.mkean.demo.BuildConfig;
 import com.mkean.demo.app.BaseApplication;
 import com.mkean.demo.app.Constants;
 import com.mkean.demo.http.interceptor.CommonInterceptor;
@@ -12,14 +13,19 @@ import com.mkean.demo.http.interceptor.CommonInterceptor;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.fastjson.FastJsonConverterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Administrator on 2016/ic_yello_ball/23.
  */
 public class HttpMethod {
+
+    public static final String TAG = HttpMethod.class.getSimpleName();
+
     //        public static final String BASEHTTP = "http://life.yfcanshi.com/api/v2/";
     public static final String BASEHTTP = BaseApplication.baseurlGCX;
 //        public static final String BASEHTTP = "http://118.178.95.214:10999/api/v2/";
@@ -49,6 +55,7 @@ public class HttpMethod {
 
     private Retrofit retrofit;
     private Context context;
+    private HttpLoggingInterceptor logInterceptor;
 
     private HttpMethod(Context context) {
         this.context = context;
@@ -62,10 +69,17 @@ public class HttpMethod {
 
 
         CommonInterceptor commonInterceptor = new CommonInterceptor("from_client", "com.yingegou.android", Constants.REQUEST_VERSION, versionCode);
+        if (BuildConfig.DEBUG) {
+            logInterceptor = new HttpLoggingInterceptor(message -> {
+                Log.d(TAG, message);
+            });
+            logInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        }
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .cookieJar(new CookiesManager(context))
-                .addInterceptor(commonInterceptor)
+//                .addInterceptor(commonInterceptor)
+                .addInterceptor(logInterceptor)
                 //自定义连接时间
                 .connectTimeout(30, TimeUnit.SECONDS)
                 // 读取超时时间
@@ -77,11 +91,12 @@ public class HttpMethod {
 //        client.connectTimeoutMillis();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl(BASEHTTP)
                 .client(client)
-//                .addConverterFactory(GsonConverterFactory.create())
-                .addConverterFactory(FastJsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+//                .addConverterFactory(FastJsonConverterFactory.create())
+//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .baseUrl(BASEHTTP)
                 .build();
 
     }
@@ -94,13 +109,10 @@ public class HttpMethod {
     }
 
     public <T> T getServices(Class<T> T) {
-//        T t = retrofit.create(T);
-        T t = com.bidanet.android.common.utils.http.HttpMethod.getHttp().create(T);
-        return t;
+        return com.bidanet.android.common.utils.http.HttpMethod.getHttp().create(T);
     }
 
     public <T> T getServicesNoToken(Class<T> T) {
-        T t = retrofit.create(T);
-        return t;
+        return retrofit.create(T);
     }
 }

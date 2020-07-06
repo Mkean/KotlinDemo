@@ -77,8 +77,7 @@ public interface LoginServices {
      * @return
      */
     @POST("user/getSmsCode.do")
-    Observable<ResultData<String>> getSmsCode(@Query("mobile") String mobile,
-                                              @Query("picCode") String picCode, @Query("uuid") String uuid);
+    Observable<ResultData<String>> getSmsCode(@Query("mobile") String mobile, @Query("picCode") String picCode, @Query("uuid") String uuid);
 
     /**
      * 获取电话语音验证码

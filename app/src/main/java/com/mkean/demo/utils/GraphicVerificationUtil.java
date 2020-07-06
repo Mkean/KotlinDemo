@@ -19,6 +19,7 @@ import com.orhanobut.logger.Logger;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+
 public class GraphicVerificationUtil implements View.OnClickListener {
 
     public Activity activity;
